@@ -379,11 +379,7 @@
     }
 
     function getStorageKey(key) {
-      const origin = window.location.origin && window.location.origin !== 'null'
-        ? window.location.origin
-        : 'file';
-      const path = window.location.pathname || '';
-      return `${origin}${path}-${key}`;
+      return `expense-tracker-${key}`;
     }
 
     function loadData() {
