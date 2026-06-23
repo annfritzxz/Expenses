@@ -562,7 +562,16 @@
       }
     };
 
-    loadData();
+    try {
+      loadData();
+    } catch (e) {
+      console.error('Failed to load data:', e);
+      // Initialize empty data to avoid "file not found" or similar errors
+      expenses = [];
+      saveData();
+      renderExpenses();
+      updateDashboard();
+    }
   </script>
 </body>
 </html>
