@@ -378,10 +378,18 @@
       return `₱${Number(value).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
     }
 
+    function getStorageKey(key) {
+      const origin = window.location.origin && window.location.origin !== 'null'
+        ? window.location.origin
+        : 'file';
+      const path = window.location.pathname || '';
+      return `${origin}${path}-${key}`;
+    }
+
     function loadData() {
-      const storedExpenses = localStorage.getItem('expenses');
-      const storedBudget = localStorage.getItem('budget');
-      const storedTheme = localStorage.getItem('theme');
+      const storedExpenses = localStorage.getItem(getStorageKey('expenses'));
+      const storedBudget = localStorage.getItem(getStorageKey('budget'));
+      const storedTheme = localStorage.getItem(getStorageKey('theme'));
       if (storedExpenses) {
         expenses = JSON.parse(storedExpenses);
       }
@@ -395,14 +403,14 @@
     }
 
     function saveData() {
-      localStorage.setItem('expenses', JSON.stringify(expenses));
-      localStorage.setItem('budget', budget);
+      localStorage.setItem(getStorageKey('expenses'), JSON.stringify(expenses));
+      localStorage.setItem(getStorageKey('budget'), budget);
     }
 
     function applyTheme(theme) {
       document.documentElement.dataset.theme = theme;
       themeToggle.textContent = theme === 'dark' ? 'Light Mode' : 'Dark Mode';
-      localStorage.setItem('theme', theme);
+      localStorage.setItem(getStorageKey('theme'), theme);
     }
 
     function toggleTheme() {
