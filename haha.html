@@ -71,19 +71,10 @@
       line-height: 1.5;
     }
 
-    .theme-toggle {
-      background: var(--surface-strong);
-      color: var(--text);
-      border: 1px solid var(--border);
-      padding: 12px 18px;
-      border-radius: 999px;
-      cursor: pointer;
-      transition: background 0.25s ease, transform 0.2s ease;
-    }
-
-    .theme-toggle:hover {
-      transform: translateY(-1px);
-      background: var(--surface);
+    .page-note {
+      color: var(--muted);
+      font-size: 0.95rem;
+      margin-top: 8px;
     }
 
     .dashboard {
@@ -264,8 +255,8 @@
       <div>
         <h1>Expense Tracker</h1>
         <p>Track expenses, budget, search, edit, delete, and view monthly summary.</p>
+        <p class="page-note">After pushing this file to GitHub, access it via GitHub Pages at <code>https://&lt;username&gt;.github.io/&lt;repo-name&gt;/haha.html</code>.</p>
       </div>
-      <button id="theme-toggle" class="theme-toggle">Dark Mode</button>
     </header>
 
     <div class="dashboard">
@@ -368,7 +359,6 @@
     const dashboardRemaining = document.getElementById('dashboard-remaining');
     const dashboardMonthly = document.getElementById('dashboard-monthly');
     const expenseIdInput = document.getElementById('expense-id');
-    const themeToggle = document.getElementById('theme-toggle');
 
     let expenses = [];
     let budget = 0;
@@ -385,7 +375,6 @@
     function loadData() {
       const storedExpenses = localStorage.getItem(getStorageKey('expenses'));
       const storedBudget = localStorage.getItem(getStorageKey('budget'));
-      const storedTheme = localStorage.getItem(getStorageKey('theme'));
       if (storedExpenses) {
         expenses = JSON.parse(storedExpenses);
       }
@@ -393,7 +382,6 @@
         budget = Number(storedBudget);
         budgetAmountInput.value = budget;
       }
-      applyTheme(storedTheme || 'light');
       renderExpenses();
       updateDashboard();
     }
@@ -401,17 +389,6 @@
     function saveData() {
       localStorage.setItem(getStorageKey('expenses'), JSON.stringify(expenses));
       localStorage.setItem(getStorageKey('budget'), budget);
-    }
-
-    function applyTheme(theme) {
-      document.documentElement.dataset.theme = theme;
-      themeToggle.textContent = theme === 'dark' ? 'Light Mode' : 'Dark Mode';
-      localStorage.setItem(getStorageKey('theme'), theme);
-    }
-
-    function toggleTheme() {
-      const current = document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light';
-      applyTheme(current === 'dark' ? 'light' : 'dark');
     }
 
     function getTotalExpenses() {
@@ -537,8 +514,6 @@
       renderExpenses();
     });
 
-    themeToggle.addEventListener('click', toggleTheme);
-
     window.editExpense = function(id) {
       const expense = expenses.find(item => item.id === id);
       if (!expense) return;
@@ -561,6 +536,7 @@
         resetExpenseForm();
       }
     };
+    
 
     try {
       loadData();
