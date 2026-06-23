@@ -217,7 +217,7 @@
                         </select>
                     </div>
                     <div>
-                        <label for="budget">Set Budget</label>
+                        <label for="budget">Set Budget (leave blank to keep current)</label>
                         <input type="number" id="budget" min="0" step="1" placeholder="₱5000">
                     </div>
                 </div>
@@ -358,7 +358,7 @@
             const budgetAmount = Number(budgetInput.value);
 
             if (!name || !amount || !date || !category) return;
-            if (budgetAmount >= 0) {
+            if (budgetInput.value.trim() !== '' && budgetAmount >= 0) {
                 budget = budgetAmount;
             }
             if (editId) {
