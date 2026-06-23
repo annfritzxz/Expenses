@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Expense Tracker</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background: #f4f7fb;
+      color: #333;
+    }
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    header {
+      text-align: center;
+      margin-bottom: 18px;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 2rem;
+    }
+    .dashboard {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+    .card {
+      background: #fff;
+      border-radius: 10px;
+      padding: 18px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+    .card h2 {
+      margin: 0 0 8px;
+      font-size: 1rem;
+      color: #888;
+    }
+    .card p {
+      margin: 0;
+      font-size: 1.6rem;
+      font-weight: 600;
+    }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+    form {
+      background: #fff;
+      border-radius: 10px;
+      padding: 18px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+    form h2 {
+      margin-top: 0;
+    }
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+    input[type="text"],
+    input[type="number"],
+    input[type="date"],
+    select {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 12px;
+      border: 1px solid #d3dce6;
+      border-radius: 8px;
+      font-size: 1rem;
+      background: #fdfdff;
+    }
+    button {
+      background: #2f80ed;
+      border: none;
+      color: #fff;
+      padding: 12px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+    button.secondary {
+      background: #6c757d;
+    }
+    .search-bar {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+    }
+    .search-bar input, .search-bar select {
+      flex: 1;
+      min-width: 200px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+    th, td {
+      text-align: left;
+      padding: 14px 16px;
+      border-bottom: 1px solid #f0f3f8;
+    }
+    th {
+      background: #f8fafc;
+      font-weight: 600;
+    }
+    tr:last-child td {
+      border-bottom: none;
+    }
+    .action-buttons button {
+      margin-right: 8px;
+      margin-bottom: 4px;
+    }
+    @media (max-width: 780px) {
+      .grid-2 {
+        grid-template-columns: 1fr;
+      }
+      .search-bar {
+        flex-direction: column;
+      }
+      th, td {
+        padding: 12px 8px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Expense Tracker</h1>
+      <p>Track expenses, budget, search, edit, delete, and view monthly summary.</p>
+    </header>
+
+    <div class="dashboard">
+      <div class="card">
+        <h2>Total Budget</h2>
+        <p id="dashboard-budget">₱0</p>
+      </div>
+      <div class="card">
+        <h2>Total Expenses</h2>
+        <p id="dashboard-expenses">₱0</p>
+      </div>
+      <div class="card">
+        <h2>Remaining Balance</h2>
+        <p id="dashboard-remaining">₱0</p>
+      </div>
+      <div class="card">
+        <h2>Current Month</h2>
+        <p id="dashboard-monthly">₱0</p>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <form id="budget-form">
+        <h2>Set Budget</h2>
+        <label for="budget-amount">Budget Amount</label>
+        <input id="budget-amount" type="number" min="0" placeholder="Enter total budget" />
+        <button type="submit">Save Budget</button>
+      </form>
+
+      <form id="expense-form">
+        <h2 id="expense-form-title">Add Expense</h2>
+        <input type="hidden" id="expense-id" />
+        <label for="expense-name">Expense Name</label>
+        <input id="expense-name" type="text" placeholder="e.g. Food" required />
+
+        <label for="expense-category">Category</label>
+        <select id="expense-category">
+          <option value="Food">Food</option>
+          <option value="Transportation">Transportation</option>
+          <option value="Bills">Bills</option>
+          <option value="Shopping">Shopping</option>
+          <option value="Others">Others</option>
+        </select>
+
+        <label for="expense-amount">Amount</label>
+        <input id="expense-amount" type="number" min="0" step="0.01" placeholder="Enter amount" required />
+
+        <label for="expense-date">Date</label>
+        <input id="expense-date" type="date" required />
+
+        <button type="submit" id="expense-submit">Add Expense</button>
+      </form>
+    </div>
+
+    <div class="search-bar">
+      <input id="search-text" type="text" placeholder="Search by name or category" />
+      <select id="filter-category">
+        <option value="">All Categories</option>
+        <option value="Food">Food</option>
+        <option value="Transportation">Transportation</option>
+        <option value="Bills">Bills</option>
+        <option value="Shopping">Shopping</option>
+        <option value="Others">Others</option>
+      </select>
+      <button type="button" class="secondary" id="clear-filters">Clear Filters</button>
+    </div>
+
+    <div>
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Category</th>
+            <th>Amount</th>
+            <th>Date</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="expense-table-body"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    const budgetForm = document.getElementById('budget-form');
+    const expenseForm = document.getElementById('expense-form');
+    const budgetAmountInput = document.getElementById('budget-amount');
+    const expenseNameInput = document.getElementById('expense-name');
+    const expenseCategoryInput = document.getElementById('expense-category');
+    const expenseAmountInput = document.getElementById('expense-amount');
+    const expenseDateInput = document.getElementById('expense-date');
+    const expenseTableBody = document.getElementById('expense-table-body');
+    const expenseFormTitle = document.getElementById('expense-form-title');
+    const expenseSubmitButton = document.getElementById('expense-submit');
+    const searchText = document.getElementById('search-text');
+    const filterCategory = document.getElementById('filter-category');
+    const clearFiltersButton = document.getElementById('clear-filters');
+    const dashboardBudget = document.getElementById('dashboard-budget');
+    const dashboardExpenses = document.getElementById('dashboard-expenses');
+    const dashboardRemaining = document.getElementById('dashboard-remaining');
+    const dashboardMonthly = document.getElementById('dashboard-monthly');
+    const expenseIdInput = document.getElementById('expense-id');
+
+    let expenses = [];
+    let budget = 0;
+    let editingExpenseId = null;
+
+    function formatCurrency(value) {
+      return `₱${Number(value).toLocaleString('en-PH', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+    }
+
+    function loadData() {
+      const storedExpenses = localStorage.getItem('expenses');
+      const storedBudget = localStorage.getItem('budget');
+      if (storedExpenses) {
+        expenses = JSON.parse(storedExpenses);
+      }
+      if (storedBudget) {
+        budget = Number(storedBudget);
+        budgetAmountInput.value = budget;
+      }
+      renderExpenses();
+      updateDashboard();
+    }
+
+    function saveData() {
+      localStorage.setItem('expenses', JSON.stringify(expenses));
+      localStorage.setItem('budget', budget);
+    }
+
+    function getTotalExpenses() {
+      return expenses.reduce((sum, expense) => sum + Number(expense.amount), 0);
+    }
+
+    function getMonthlyExpenses() {
+      const now = new Date();
+      const currentYear = now.getFullYear();
+      const currentMonth = now.getMonth();
+      return expenses.reduce((sum, expense) => {
+        const expenseDate = new Date(expense.date);
+        if (expenseDate.getFullYear() === currentYear && expenseDate.getMonth() === currentMonth) {
+          return sum + Number(expense.amount);
+        }
+        return sum;
+      }, 0);
+    }
+
+    function updateDashboard() {
+      const totalExpenses = getTotalExpenses();
+      dashboardBudget.textContent = formatCurrency(budget);
+      dashboardExpenses.textContent = formatCurrency(totalExpenses);
+      dashboardRemaining.textContent = formatCurrency(Math.max(0, budget - totalExpenses));
+      dashboardMonthly.textContent = formatCurrency(getMonthlyExpenses());
+    }
+
+    function renderExpenses() {
+      const search = searchText.value.trim().toLowerCase();
+      const category = filterCategory.value;
+      expenseTableBody.innerHTML = '';
+
+      const filteredExpenses = expenses.filter(expense => {
+        const matchesSearch = expense.name.toLowerCase().includes(search) || expense.category.toLowerCase().includes(search);
+        const matchesCategory = category === '' || expense.category === category;
+        return matchesSearch && matchesCategory;
+      });
+
+      if (filteredExpenses.length === 0) {
+        const row = document.createElement('tr');
+        const cell = document.createElement('td');
+        cell.colSpan = 5;
+        cell.textContent = 'No expenses found.';
+        row.appendChild(cell);
+        expenseTableBody.appendChild(row);
+        return;
+      }
+
+      filteredExpenses.forEach(expense => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${expense.name}</td>
+          <td>${expense.category}</td>
+          <td>${formatCurrency(expense.amount)}</td>
+          <td>${expense.date}</td>
+          <td class="action-buttons">
+            <button type="button" onclick="editExpense('${expense.id}')">Edit</button>
+            <button type="button" class="secondary" onclick="deleteExpense('${expense.id}')">Delete</button>
+          </td>
+        `;
+        expenseTableBody.appendChild(row);
+      });
+    }
+
+    function resetExpenseForm() {
+      expenseIdInput.value = '';
+      expenseNameInput.value = '';
+      expenseCategoryInput.value = 'Food';
+      expenseAmountInput.value = '';
+      expenseDateInput.value = '';
+      editingExpenseId = null;
+      expenseFormTitle.textContent = 'Add Expense';
+      expenseSubmitButton.textContent = 'Add Expense';
+    }
+
+    budgetForm.addEventListener('submit', function(event) {
+      event.preventDefault();
+      budget = Number(budgetAmountInput.value) || 0;
+      saveData();
+      updateDashboard();
+    });
+
+    expenseForm.addEventListener('submit', function(event) {
+      event.preventDefault();
+      const name = expenseNameInput.value.trim();
+      const category = expenseCategoryInput.value;
+      const amount = Number(expenseAmountInput.value);
+      const date = expenseDateInput.value;
+
+      if (!name || !date || amount <= 0) {
+        return;
+      }
+
+      if (editingExpenseId) {
+        const item = expenses.find(expense => expense.id === editingExpenseId);
+        if (item) {
+          item.name = name;
+          item.category = category;
+          item.amount = amount;
+          item.date = date;
+        }
+      } else {
+        expenses.push({
+          id: `expense-${Date.now()}`,
+          name,
+          category,
+          amount,
+          date
+        });
+      }
+
+      saveData();
+      renderExpenses();
+      updateDashboard();
+      resetExpenseForm();
+    });
+
+    searchText.addEventListener('input', renderExpenses);
+    filterCategory.addEventListener('change', renderExpenses);
+    clearFiltersButton.addEventListener('click', function() {
+      searchText.value = '';
+      filterCategory.value = '';
+      renderExpenses();
+    });
+
+    window.editExpense = function(id) {
+      const expense = expenses.find(item => item.id === id);
+      if (!expense) return;
+      editingExpenseId = id;
+      expenseIdInput.value = id;
+      expenseNameInput.value = expense.name;
+      expenseCategoryInput.value = expense.category;
+      expenseAmountInput.value = expense.amount;
+      expenseDateInput.value = expense.date;
+      expenseFormTitle.textContent = 'Edit Expense';
+      expenseSubmitButton.textContent = 'Save Changes';
+    };
+
+    window.deleteExpense = function(id) {
+      expenses = expenses.filter(expense => expense.id !== id);
+      saveData();
+      renderExpenses();
+      updateDashboard();
+      if (editingExpenseId === id) {
+        resetExpenseForm();
+      }
+    };
+
+    loadData();
+  </script>
+</body>
+</html>
